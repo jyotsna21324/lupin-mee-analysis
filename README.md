@@ -40,7 +40,7 @@ Manually logged shift data from plant DCS/field instruments across 3 operating d
 
 ## Tools Used
 
-Python (pandas, matplotlib, numpy), SQL (SQLite), Power BI (data import)
+Python (pandas, matplotlib, numpy), SQL
 
 ## Key Findings
 
@@ -48,15 +48,4 @@ Python (pandas, matplotlib, numpy), SQL (SQLite), Power BI (data import)
 - Excluding the flagged reading, average steam economy across reliable readings is **~5.0 kg vapor/kg steam**, with Day 3 (4.35) closest to the theoretical maximum of 4.0 for a 4-effect evaporator.
 - Concentration factor (product % / feed %) is consistent across all three days (8.5–8.8x), indicating stable process control despite the steam flow anomaly.
 
-## How to Run
 
-```
-cd scripts
-python3 01_data_cleaning.py
-python3 02_kpi_calculations.py
-python3 03_vacuum_profile_chart.py
-python3 04_steam_economy_chart.py
-python3 05_concentration_trend_chart.py
-```
-
-SQL queries can be run against `sql/mee_database.db` using any SQLite client.
