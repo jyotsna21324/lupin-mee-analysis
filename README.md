@@ -1,18 +1,23 @@
 # Lupin MEE Energy & Steam Efficiency Analysis
 
-This project looks at operating readings from a four-effect Multiple Effect Evaporator (MEE) and uses Python and SQL to calculate process KPIs and flag readings that need a closer check.
+This project looks at operating data from a four-effect Multiple Effect Evaporator (MEE) system and uses Python and SQL to calculate process KPIs, review operating trends and flag readings that may need an instrumentation check.
 
-The data was collected during a process engineering internship at Lupin Pharmaceuticals, Bhopal, in May 2026. It covers three operating days.
+The data was collected during a process engineering internship in May 2026. The repository contains a small shift-log dataset, so the results are an analysis of the available readings rather than a long-term performance study.
 
-## What I analysed
+## What I looked at
 
-- Cleaned the shift readings and flagged a steam-flow value that produced an implausible steam-economy result.
-- Calculated evaporation load, steam economy, concentration factor, condensate recovery ratio and cooling-water temperature rise.
-- Queried the readings in SQLite and plotted the vacuum profile, steam economy and feed-to-product concentration.
+- Steam economy and evaporation load
+- Feed-to-product concentration factor
+- Condensate recovery ratio
+- Cooling-water temperature rise
+- Effect-wise vacuum profile
+- Unusual steam-flow readings
 
-One reading showed a steam flow of 132 kg/hr, compared with 1,318–1,700 kg/hr on the other two days. I treated the resulting steam-economy value as an instrumentation or logging issue to investigate, rather than using it uncritically in the average. The reliable readings give an average steam economy of about 5.0 kg vapor/kg steam.
+## What stood out
 
-These are observations from a small, three-day dataset, not a long-term performance assessment of the plant.
+One steam-flow reading (132 kg/hr) is far below the other two readings (1,318–1,700 kg/hr). Using it without checking would produce an implausibly high steam-economy value. The cleaning script flags readings outside the 1–10 range for review rather than treating them as normal operating data.
+
+For the two readings not flagged by this rule, the average steam economy is approximately 5.0 kg vapor per kg steam. The third day's value is about 4.35. These figures should be interpreted cautiously: there are only three days of readings, and the benchmark used in the analysis is a reference for a four-effect system, not a guarantee of actual plant performance.
 
 ## Charts
 
@@ -26,22 +31,38 @@ These are observations from a small, three-day dataset, not a long-term performa
 
 **Feed and product concentration**
 
-![Feed vs product concentration](concentration_trend.png)
+![Feed and product concentration](concentration_trend.png)
 
 ## Files
 
-The files are kept in the repository root:
+- `LUPIN_DATASET_original.xlsx` — original shift-log readings
+- `01_data_cleaning.py` — loads the readings, converts numeric fields and flags unusual steam-economy values
+- `02_kpi_calculations.py` — calculates process KPIs and exports `kpi_summary.csv`
+- `03_vacuum_profile_chart.py`, `04_steam_economy_chart.py`, `05_concentration_trend_chart.py` — create the charts shown above
+- `cleaned_mee_data.csv` and `kpi_summary.csv` — processed data and calculated KPIs
+- `mee_analysis.sql` — SQL queries for reviewing the readings and calculated metrics
+- `mee_database.db` — SQLite database
 
-- `01_data_cleaning.py` — reads the raw Excel file, cleans the readings and flags anomalies.
-- `02_kpi_calculations.py` — calculates the process KPIs and writes `kpi_summary.csv`.
-- `03_vacuum_profile_chart.py`, `04_steam_economy_chart.py`, `05_concentration_trend_chart.py` — create the charts shown above.
-- `LUPIN_DATASET_original.xlsx` — raw shift-log data.
-- `cleaned_mee_data.csv`, `kpi_summary.csv` — cleaned readings and calculated KPIs.
-- `mee_analysis.sql`, `mee_database.db` — SQL queries and SQLite database.
-- `vacuum_profile.png`, `steam_economy.png`, `concentration_trend.png` — chart outputs.
+## Run
 
-## Tools
+Install the dependencies:
 
-Python, pandas, NumPy, matplotlib and SQLite.
+```bash
+pip install -r requirements.txt
+```
 
-The dataset contains a small number of manually logged plant readings. Share it only if you have permission to disclose the underlying internship data.
+Run the scripts from the repository's main directory, in this order:
+
+```bash
+python 01_data_cleaning.py
+python 02_kpi_calculations.py
+python 03_vacuum_profile_chart.py
+python 04_steam_economy_chart.py
+python 05_concentration_trend_chart.py
+```
+
+The scripts read and write files in the repository's main directory. The SQL queries can be run against `mee_database.db` using SQLite.
+
+## Notes
+
+The anomaly flag is a screening rule, not proof that an instrument is faulty. A flagged value needs to be checked against the original log and plant records. The dataset is limited, so the findings should not be generalised beyond the readings analysed.
