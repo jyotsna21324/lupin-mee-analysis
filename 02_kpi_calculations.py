@@ -1,9 +1,11 @@
 import pandas as pd
+from pathlib import Path
 
-df = pd.read_csv('../data/cleaned_mee_data.csv')
+BASE_DIR = Path(__file__).resolve().parent
+df = pd.read_csv(BASE_DIR / 'cleaned_mee_data.csv')
 
 def evaporation_load(row):
-    return row['FEED_RATE_kLhr']*1000 - row['PRODUCT_RATE_kghr']
+    return row['FEED_RATE_kLhr'] * 1000 - row['PRODUCT_RATE_kghr']
 
 def steam_economy(row):
     return evaporation_load(row) / row['STEAM_FLOW_kghr']
@@ -12,7 +14,7 @@ def concentration_factor(row):
     return row['PRODUCT_CONC_PCT'] / row['FEED_CONC_PCT']
 
 def condensate_recovery_ratio(row):
-    return (row['CONDENSATE_RATE_kLhr']*1000) / row['STEAM_FLOW_kghr']
+    return (row['CONDENSATE_RATE_kLhr'] * 1000) / row['STEAM_FLOW_kghr']
 
 def cw_delta_t(row, in_col='CW_IN_C', out_col='CW_OUT_C'):
     return row[out_col] - row[in_col]
@@ -32,7 +34,7 @@ benchmark_economy = 4.0
 avg_reliable_economy = reliable['STEAM_ECONOMY'].mean()
 gap_pct = ((benchmark_economy - avg_reliable_economy) / benchmark_economy) * 100
 
-kpi.to_csv('../data/kpi_summary.csv', index=False)
+kpi.to_csv(BASE_DIR / 'kpi_summary.csv', index=False)
 
 print(kpi)
 print('Average steam economy (reliable readings only):', round(avg_reliable_economy, 2))
