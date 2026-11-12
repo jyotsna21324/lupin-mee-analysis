@@ -1,51 +1,47 @@
 # Lupin MEE Energy & Steam Efficiency Analysis
 
-Analysis of shift-log data from a Multiple Effect Evaporator (MEE) system at Lupin Pharmaceuticals, Bhopal, collected during a process engineering internship (May 2026). The project applies Python and SQL to compute process efficiency KPIs and flag instrumentation anomalies from raw shift-log readings.
+This project looks at operating readings from a four-effect Multiple Effect Evaporator (MEE) and uses Python and SQL to calculate process KPIs and flag readings that need a closer check.
 
-## Objective
+The data was collected during a process engineering internship at Lupin Pharmaceuticals, Bhopal, in May 2026. It covers three operating days.
 
-Convert raw plant instrumentation readings (temperature, vacuum, steam flow, feed/product rates) into actionable process performance metrics — steam economy, concentration factor, and condensate recovery — and validate them against theoretical benchmarks for a 4-effect evaporator system.
+## What I analysed
 
-## Data Source
+- Cleaned the shift readings and flagged a steam-flow value that produced an implausible steam-economy result.
+- Calculated evaporation load, steam economy, concentration factor, condensate recovery ratio and cooling-water temperature rise.
+- Queried the readings in SQLite and plotted the vacuum profile, steam economy and feed-to-product concentration.
 
-Manually logged shift data from plant DCS/field instruments across 3 operating days, covering:
-- Effect-wise temperature and vacuum readings (VS-01 to VS-04, RP-02 to RP-04)
-- Cooling water inlet/outlet temperatures
-- Steam pressure, flow, and totalizer readings
-- Feed rate, condensate rate, product rate
-- Feed and product concentration (%)
+One reading showed a steam flow of 132 kg/hr, compared with 1,318–1,700 kg/hr on the other two days. I treated the resulting steam-economy value as an instrumentation or logging issue to investigate, rather than using it uncritically in the average. The reliable readings give an average steam economy of about 5.0 kg vapor/kg steam.
 
-## Repository Structure
+These are observations from a small, three-day dataset, not a long-term performance assessment of the plant.
 
-```
-├── data/
-│   ├── LUPIN_DATASET_original.xlsx     Raw shift-log data
-│   ├── cleaned_mee_data.csv            Cleaned dataset with anomaly flags
-│   ├── kpi_summary.csv                 Calculated KPIs
-│   └── powerbi_ready_data.xlsx         Formatted for Power BI import
-├── scripts/
-│   ├── 01_data_cleaning.py             Load, clean, flag anomalies
-│   ├── 02_kpi_calculations.py          Steam economy, concentration factor, condensate recovery
-│   ├── 03_vacuum_profile_chart.py      Effect-wise vacuum profile
-│   ├── 04_steam_economy_chart.py       Steam economy by day
-│   └── 05_concentration_trend_chart.py Feed vs product concentration
-├── sql/
-│   ├── mee_analysis.sql                Query set for the same analysis in SQL
-│   └── mee_database.db                 SQLite database of the cleaned dataset
-└── visuals/
-    ├── vacuum_profile.png
-    ├── steam_economy.png
-    └── concentration_trend.png
-```
+## Charts
 
-## Tools Used
+**Effect-wise vacuum profile**
 
-Python (pandas, matplotlib, numpy), SQL
+![Effect-wise vacuum profile](vacuum_profile.png)
 
-## Key Findings
+**Steam economy by day**
 
-- Steam flow reading on Day 1 (132 kg/hr) is inconsistent with Days 2–3 (1318–1700 kg/hr), producing an implausible steam economy of ~56. Flagged as a likely instrumentation/logging error rather than averaged in blindly.
-- Excluding the flagged reading, average steam economy across reliable readings is **~5.0 kg vapor/kg steam**, with Day 3 (4.35) closest to the theoretical maximum of 4.0 for a 4-effect evaporator.
-- Concentration factor (product % / feed %) is consistent across all three days (8.5–8.8x), indicating stable process control despite the steam flow anomaly.
+![Steam economy by day](steam_economy.png)
 
+**Feed and product concentration**
 
+![Feed vs product concentration](concentration_trend.png)
+
+## Files
+
+The files are kept in the repository root:
+
+- `01_data_cleaning.py` — reads the raw Excel file, cleans the readings and flags anomalies.
+- `02_kpi_calculations.py` — calculates the process KPIs and writes `kpi_summary.csv`.
+- `03_vacuum_profile_chart.py`, `04_steam_economy_chart.py`, `05_concentration_trend_chart.py` — create the charts shown above.
+- `LUPIN_DATASET_original.xlsx` — raw shift-log data.
+- `cleaned_mee_data.csv`, `kpi_summary.csv` — cleaned readings and calculated KPIs.
+- `mee_analysis.sql`, `mee_database.db` — SQL queries and SQLite database.
+- `vacuum_profile.png`, `steam_economy.png`, `concentration_trend.png` — chart outputs.
+
+## Tools
+
+Python, pandas, NumPy, matplotlib and SQLite.
+
+The dataset contains a small number of manually logged plant readings. Share it only if you have permission to disclose the underlying internship data.
